@@ -32,7 +32,6 @@ websites: list[Type[WebsiteLink]] = [
     CustomLink
 ]
 
-
 def get_website(guild: Guild, url: str, spoiler: bool = True) -> Optional[WebsiteLink]:
     """
     Get the website of the URL.
