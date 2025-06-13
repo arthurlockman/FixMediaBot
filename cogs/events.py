@@ -153,7 +153,7 @@ class Events(discore.Cog,
 
 
     @discore.Cog.listener()
-    async def on_reaction_add(self, reaction: discore.Reaction, _) -> None:
+    async def on_reaction_add(self, reaction: discore.Reaction, user: discore.User) -> None:
         """
         React to reaction add events
 
@@ -162,12 +162,28 @@ class Events(discore.Cog,
         if (reaction.message.author.bot and
                 reaction.message.author.id == self.bot.user.id and
                 (reaction.emoji == "❌" or reaction.emoji == "🗑️" or reaction.emoji == "❎")):
-            # If we have a message written by the bot itself with an X emoji, delete it
+            """
+            First check to see if we have the original message that we reacted to.
+            If we do, only allow the original author of the message to delete it.
+            If we don't have the original message, delete the embed message.
+            """
             try:
-                await reaction.message.delete()
-            except discore.NotFound:
-                _logger.warning("Message already deleted or not found")
-                pass
+                og_message = await reaction.message.channel.fetch_message(reaction.message.reference.message_id)
+                og_author = og_message.author
+                if og_author.id == user.id:
+                    try:
+                        await reaction.message.delete()
+                    except discore.NotFound:
+                        _logger.warning("Message already deleted or not found")
+                        pass
+            except:
+                _logger.warning("Original message not found")
+                try:
+                    await reaction.message.delete()
+                except discore.NotFound:
+                    _logger.warning("Message already deleted or not found")
+                    pass
+
 
 
     @discore.Cog.listener()
