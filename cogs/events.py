@@ -151,6 +151,25 @@ class Events(discore.Cog,
 
         await fix_embeds(message, guild, links)
 
+
+    @discore.Cog.listener()
+    async def on_reaction_add(self, reaction: discore.Reaction, _) -> None:
+        """
+        React to reaction add events
+
+        :param reaction: The reaction that was added
+        """
+        if (reaction.message.author.bot and
+                reaction.message.author.id == self.bot.user.id and
+                (reaction.emoji == "❌" or reaction.emoji == "🗑️" or reaction.emoji == "❎")):
+            # If we have a message written by the bot itself with an X emoji, delete it
+            try:
+                await reaction.message.delete()
+            except discore.NotFound:
+                _logger.warning("Message already deleted or not found")
+                pass
+
+
     @discore.Cog.listener()
     async def on_ready(self):
         if discore.config.dev_guild:
