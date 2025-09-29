@@ -212,7 +212,7 @@ class InstagramLink(WebsiteLink):
 
     @property
     def fix_domain(self) -> str:
-        return "g.embedez.com"
+        return "vxinstagram.com"
 
     @property
     def regexes(self) -> list[re.Pattern[str]]:
